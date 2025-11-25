@@ -1,6 +1,16 @@
 { config, pkgs, ... }:
+let
+  nvf = import (builtins.fetchTarball {
+    url = "https://github.com/notashelf/nvf/archive/v0.8.tar.gz";
+    # Optionally, you can add 'sha256' for verification and caching
+    # sha256 = "<sha256>";
+  });
+in {
 
-{
+   imports = [
+    # Import the NixOS module from your fetched input
+    nvf.homeManagerModules.nvf
+  ];
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
   home.username = "thalium";
@@ -84,17 +94,30 @@
 	settings.user.name = "TLSenZ";
 }; 
 
-programs.neovim = {
-	enable = true;
-	defaultEditor = true;
-	viAlias = true;
-	vimAlias = true;
-	plugins = with pkgs.vimPlugins; [
-		nvim-lspconfig
-		nvim-treesitter.withAllGrammars
-		plenary-nvim
-		gruvbox-material
-		mini-nvim
-];
-};
+programs.nvf.enableManpages = true;
+ programs.nvf = {
+    enable = true;
+    # your settings need to go into the settings attribute set
+    # most settings are documented in the appendix
+    settings = {
+      vim.viAlias = false;
+      vim.vimAlias = true;
+      vim.lsp = {
+        enable = true;
+      };
+      vim.theme.enable = true;
+      vim.theme.name = "gruvbox";
+      vim.theme.style = "dark";
+      vim.statusline.lualine.enable = true;
+      vim.telescope.enable = true;
+      vim.autocomplete.nvim-cmp.enable = true;
+      vim.languages.enableLSP = true;
+      vim.languages.enableTreesitter = true;
+      vim.languages.nix.enable = true;
+      vim.languages.rust.enable = true;
+      vim.languages.ts.enable = true;
+
+        
+    };
+  };
 }
